@@ -16,24 +16,20 @@ logger = logging.getLogger(__name__)
 
 SCAN_INTERVAL_MINUTES = 15
 
-
 def run_scan() -> None:
     logger.info("━" * 50)
     logger.info("Rozpoczynam skan...")
 
-    # 1. Pobierz dane
     raw_pairs = get_new_solana_pairs()
     if not raw_pairs:
         logger.warning("Brak danych z API — przerywam skan")
         return
 
-    # 2. Analizuj
     df = analyze_pairs(raw_pairs)
     interesting = get_interesting_pairs(raw_pairs)
 
     logger.info(f"Skan zakończony: {len(interesting)}/{len(df)} ciekawych par")
 
-    # 3. Wyświetl w terminalu
     for pair in interesting:
         age_str = f"{pair['age_hours']:.1f}h" if pair['age_hours'] else "?"
         logger.info(
@@ -44,7 +40,6 @@ def run_scan() -> None:
             f"wiek: {age_str}"
         )
 
-    # 4. Powiadomienia Telegram (gdy będzie skonfigurowany)
     token   = os.getenv("TELEGRAM_BOT_TOKEN")
     chat_id = os.getenv("TELEGRAM_CHAT_ID")
 
